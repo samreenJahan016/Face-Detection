@@ -1,0 +1,59 @@
+import cv2
+import numpy as np
+
+# Create a blank canvas
+canvas_width = 1500
+canvas_height = 600
+canvas = np.zeros((canvas_height, canvas_width, 3), dtype=np.uint8)
+
+# Initialize drawing variables
+drawing = False  # Flag to indicate if drawing is active
+shape_type = "circle"  # Default shape type
+color = (0, 0, 255)  # Default color (red)
+
+def draw_shape(event, x, y, flags, param):
+    global canvas, drawing
+
+    if event == cv2.EVENT_LBUTTONDOWN:
+        drawing = True
+    elif event == cv2.EVENT_LBUTTONUP:
+        drawing = False
+
+    if drawing:
+        if shape_type == "circle":
+            cv2.circle(canvas, (x, y), 10, color, -1)
+        else:
+            cv2.rectangle(canvas, (x - 10, y - 10), (x + 10, y + 10), color, -1)
+
+# Create an OpenCV window and bind the mouse callback function
+cv2.namedWindow("Abstract Painting")
+cv2.setMouseCallback("Abstract Painting", draw_shape)
+
+while True:
+    cv2.imshow("Abstract Painting", canvas)
+    
+    # Check for keyboard input
+    key = cv2.waitKey(1) & 0xFF
+    
+    # Clear canvas when 'c' key is pressed
+    if key == ord('c'):
+        canvas.fill(0)
+    
+    # Toggle shape type between circle and rectangle when 't' key is pressed
+    elif key == ord('t'):
+        shape_type = "circle" if shape_type == "rectangle" else "rectangle"
+    
+    # Change drawing color when 'r', 'g', or 'b' key is pressed
+    elif key == ord('r'):
+        color = (0, 0, 255)  # Red
+    elif key == ord('g'):
+        color = (0, 255, 0)  # Green
+    elif key == ord('b'):
+        color = (255, 0, 0)  # Blue
+    
+    # Quit the program when 'q' key is pressed
+    elif key == ord('q'):
+        break
+
+# Close the OpenCV window
+cv2.destroyAllWindows()
